@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api, setToken } from "@/lib/api";
+import { API_BASE, api, setToken } from "@/lib/api";
 
 function PasswordForm() {
   const params = useSearchParams();
@@ -17,7 +17,7 @@ function PasswordForm() {
     setError(null);
     try {
       const r = await api<{ token?: string }>("/auth/login", { method: "POST", json: { password } });
-      setToken(r.token ?? null);
+      setToken(API_BASE ? r.token ?? null : null);     // same origin: the HttpOnly cookie is the session
       const next = params.get("next");
       router.replace(next && next.startsWith("/") && !next.startsWith("//") ? next : "/");
     } catch (err) {

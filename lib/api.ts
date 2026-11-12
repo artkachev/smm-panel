@@ -25,9 +25,11 @@ export function setToken(token: string | null) {
   } catch { /* private mode: the session lives only in memory for this page */ }
 }
 
-/** In cross-origin mode the session is a Bearer token; without it there is nothing to ask the API. */
+/** Same origin (panel and API on one server): HttpOnly session cookie; its readable CSRF twin tells us a session
+ *  may exist. Cross-origin mode: a Bearer token. Either way the API has the final word (401 -> login). */
 export function hasSession(): boolean {
-  return !API_BASE || !!getToken();
+  if (API_BASE) return !!getToken();
+  return /(?:^|;\s*)smm_csrf=/.test(document.cookie);
 }
 
 export function goToLogin() {
