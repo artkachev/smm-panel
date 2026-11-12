@@ -46,7 +46,7 @@ async function request(path: string, init: RequestInit & { json?: unknown } = {}
   const method = (init.method ?? "GET").toUpperCase();
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  else if (method !== "GET") headers.set("X-CSRF-Token", csrf());       // same-origin cookie session (local dev)
+  else if (!API_BASE && method !== "GET") headers.set("X-CSRF-Token", csrf());   // same-origin cookie session (local dev)
   let body = init.body;
   if (init.json !== undefined) {
     headers.set("Content-Type", "application/json");
